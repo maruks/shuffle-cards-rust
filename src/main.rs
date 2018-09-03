@@ -71,10 +71,10 @@ fn main() {
 }
 mod tests {
     use cards_array;
-    use NUMBER_OF_CARDS;
     use shuffle_array;
+    use NUMBER_OF_CARDS;
 
-    fn array_diff(a: [i32; NUMBER_OF_CARDS], b: [i32; NUMBER_OF_CARDS]) -> u32 {
+    fn array_diff(a: &[i32; NUMBER_OF_CARDS], b: &[i32; NUMBER_OF_CARDS]) -> u32 {
         let mut result = 0;
         for i in 0..NUMBER_OF_CARDS {
             if a[i] != b[i] {
@@ -92,8 +92,8 @@ mod tests {
         let mut shuffled_cards = cards_array();
         shuffle_array(&mut shuffled_cards, 2);
 
-        let diff_shuffled = array_diff(shuffled_cards, cards1);
-        let diff_sorted = array_diff(cards1, cards2);
+        let diff_shuffled = array_diff(&shuffled_cards, &cards1);
+        let diff_sorted = array_diff(&cards1, &cards2);
 
         assert!(diff_shuffled > 46);
         assert!(diff_sorted == 0);
