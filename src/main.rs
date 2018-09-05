@@ -5,33 +5,43 @@ use std::io;
 use std::process::exit;
 
 const NUMBER_OF_CARDS: usize = 52;
-const RAND_BITS: u32 = 6;
 
 fn random_number_k(k: u32) -> u32 {
-    rand::thread_rng().gen_range(1, k + 1)
+    thread_rng().gen_range(1, k + 1)
 }
 
-fn random_number(k: u32, bits: u32, result: u32) -> u32 {
-    if bits == 0 {
+fn random_number(k: u32, multiplier: u32, digits: u32, result: u32) -> u32 {
+    if digits == 0 {
         result
     } else {
         let rnd = random_number_k(k) - 1;
-        random_number(k, bits - 1, (result << 1) | (rnd & 1))
+        random_number(k, multiplier * k, digits - 1, result + rnd * multiplier)
     }
 }
 
-fn random_card_index(k: u32) -> u32 {
-    let result = random_number(k, RAND_BITS, 0);
-    if result < NUMBER_OF_CARDS as u32 {
-        result
+fn random_card_index(k: u32, digits: u32, max: u32) -> u32 {
+    let result = random_number(k, 1, digits, 0);
+    if result > max {
+        random_card_index(k, digits, max)
     } else {
-        random_card_index(k)
+        result % NUMBER_OF_CARDS as u32
+    }
+}
+
+fn find_max_and_digits(k: u32, multiplier: u32, max: u32, digits: u32) -> (u32, u32) {
+    if max == NUMBER_OF_CARDS as u32 - 1 {
+        (max, digits - 1)
+    } else if max > NUMBER_OF_CARDS as u32 - 1 {
+        (max - max % (NUMBER_OF_CARDS as u32) - 1, digits - 1)
+    } else {
+        find_max_and_digits(k, k * multiplier, max + multiplier * (k - 1), digits + 1)
     }
 }
 
 fn shuffle_array(array: &mut [i32; NUMBER_OF_CARDS], k: u32) {
+    let (max, digits) = find_max_and_digits(k, k, k - 1, 2);
     for i in 0..NUMBER_OF_CARDS {
-        let rand_idx = random_card_index(k) as usize;
+        let rand_idx = random_card_index(k, digits, max) as usize;
         let t = array[i];
         array[i] = array[rand_idx];
         array[rand_idx] = t;
@@ -69,6 +79,7 @@ fn main() {
         println!("elem at index {} = {}", i, cards[i]);
     }
 }
+
 mod tests {
     use cards_array;
     use shuffle_array;
