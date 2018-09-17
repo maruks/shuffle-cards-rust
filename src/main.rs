@@ -81,10 +81,9 @@ fn main() {
 }
 
 mod tests {
-    use cards_array;
-    use shuffle_array;
-    use NUMBER_OF_CARDS;
+    use super::*;
 
+    #[allow(dead_code)]
     fn array_diff(a: &[i32; NUMBER_OF_CARDS], b: &[i32; NUMBER_OF_CARDS]) -> u32 {
         let mut result = 0;
         for i in 0..NUMBER_OF_CARDS {
